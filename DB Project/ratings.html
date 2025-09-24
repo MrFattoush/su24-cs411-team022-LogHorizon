@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ratings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .rating-list {
+            margin-bottom: 20px;
+        }
+
+        .rating-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+            .rating-item h3 {
+                margin: 0;
+            }
+
+            .rating-item p {
+                margin: 5px 0;
+            }
+
+        .form-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+            .form-container form {
+                display: flex;
+                flex-direction: column;
+            }
+
+                .form-container form input,
+                .form-container form select,
+                .form-container form button {
+                    margin-bottom: 10px;
+                    padding: 8px;
+                    font-size: 16px;
+                }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ratings</h1>
+
+        <div class="form-container">
+            <h2>Add New Rating</h2>
+            <form id="addRatingForm">
+                <select name="game" required>
+                    <option value="">Select Game</option>
+                    <!-- Add options dynamically based on games in the database -->
+                </select>
+                <input type="number" name="rating" placeholder="Rating (1-5)" min="1" max="5" required>
+                <input type="text" name="review" placeholder="Review" required>
+                <button type="submit">Add Rating</button>
+            </form>
+        </div>
+
+        <div class="rating-list">
+            <h2>Rating List</h2>
+            <!-- Example rating item. Replace this with dynamic content -->
+            <div class="rating-item">
+                <h3>Game Title</h3>
+                <p>Rating: 5</p>
+                <p>Review: Excellent game!</p>
+                <button>Edit</button>
+                <button>Delete</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('addRatingForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            // Add rating submission logic
+        });
+    </script>
+</body>
+</html>

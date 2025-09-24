@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            width: 80%;
+            margin: 20px auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>User Profile</h1>
+        </div>
+
+        <div class="section" id="userDetails">
+            <h2>User Details</h2>
+            <p><strong>Username:</strong> <span id="username"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+        </div>
+
+        <div class="section" id="gamesPlayed">
+            <h2>Games Played</h2>
+            <ul class="list" id="gamesList"></ul>
+        </div>
+
+        <div class="section" id="recommendations">
+            <h2>Recommendations</h2>
+            <ul class="list" id="recommendationsList"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userId = window.location.pathname.split('/')[2];
+
+            fetch(`/api/user/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        console.log('Data:', data); // Log the data for debugging
+                        document.getElementById('username').textContent = data.user.Username;
+                        document.getElementById('email').textContent = data.user.Email;
+
+                        const gamesList = document.getElementById('gamesList');
+                        data.gamesPlayed.forEach(game => {
+                            const li = document.createElement('li');
+                            li.textContent = `${game.Title} (Developer: ${game.Developer}, Price: $${game.Price}, Release Date: ${game.ReleaseDate})`;
+                            gamesList.appendChild(li);
+                        });
+
+                        const recommendationsList = document.getElementById('recommendationsList');
+                        data.recommendations.forEach(rec => {
+                            const li = document.createElement('li');
+                            li.textContent = `${rec.GameTitle} - Rating: ${rec.Rating}, Date: ${rec.RecommendDate}, Comment: ${rec.Comment}`;
+                            recommendationsList.appendChild(li);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user profile:', error);
+                });
+        });
+    </script>
+</body>
+</html>

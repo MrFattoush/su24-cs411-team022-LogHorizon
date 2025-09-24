@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .game-list {
+            margin-bottom: 20px;
+        }
+
+        .game-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+            .game-item h3 {
+                margin: 0;
+            }
+
+            .game-item p {
+                margin: 5px 0;
+            }
+
+        .form-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+            .form-container form {
+                display: flex;
+                flex-direction: column;
+            }
+
+                .form-container form input,
+                .form-container form button {
+                    margin-bottom: 10px;
+                    padding: 8px;
+                    font-size: 16px;
+                }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Games</h1>
+
+        <div class="form-container">
+            <h2>Add New Game</h2>
+            <form id="addGameForm">
+                <input type="text" name="title" placeholder="Game Title" required>
+                <input type="text" name="genre" placeholder="Genre" required>
+                <input type="text" name="developer" placeholder="Developer" required>
+                <button type="submit">Add Game</button>
+            </form>
+        </div>
+
+        <div class="game-list">
+            <h2>Game List</h2>
+            <!-- Example game item. Replace this with dynamic content -->
+            <div class="game-item">
+                <h3>Game Title</h3>
+                <p>Genre: Action</p>
+                <p>Developer: Game Dev</p>
+                <button>Edit</button>
+                <button>Delete</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('addGameForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            // Add game submission logic
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+node_modules/
+.env
+gameRec/game-embeddings.json
+gameRec/.env
+gameRec/env-example.txt
