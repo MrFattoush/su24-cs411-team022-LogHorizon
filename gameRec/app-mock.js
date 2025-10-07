@@ -5,6 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var { CohereClient } = require('cohere-ai');
 var mockGames = require('./mock-data');
+var session = require('express-session');
 
 const cohere = new CohereClient({
     token: process.env.COHERE_API_KEY || 'YOUR_COHERE_API_KEY_HERE'
@@ -21,6 +22,44 @@ try {
     }
 } catch (error) {
     console.error('Error loading embeddings:', error);
+}
+
+// Load users from JSON file
+let users = [];
+const usersPath = path.join(__dirname, 'users.json');
+try {
+    if (fs.existsSync(usersPath)) {
+        users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+        console.log(`Loaded ${users.length} users`);
+    }
+} catch (error) {
+    console.error('Error loading users:', error);
+}
+
+// Helper function to save users
+function saveUsers() {
+    try {
+        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+        return true;
+    } catch (error) {
+        console.error('Error saving users:', error);
+        return false;
+    }
+}
+
+// Helper function to find user
+function findUser(username, password) {
+    return users.find(u => u.username === username && u.password === password);
+}
+
+// Helper function to check if username exists
+function usernameExists(username) {
+    return users.find(u => u.username === username);
+}
+
+// Helper function to check if email exists
+function emailExists(email) {
+    return users.find(u => u.email === email);
 }
 
 function cosineSimilarity(vecA, vecB) {
@@ -43,6 +82,14 @@ function cosineSimilarity(vecA, vecB) {
 
 var app = express();
 
+// Session middleware
+app.use(session({
+    secret: 'game-recommender-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 3600000 } // 1 hour
+}));
+
 // set up ejs view engine 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -51,26 +98,108 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', async function(req, res) {
-    res.render('index', { 
-        title: 'Game Recommendation System - Mock Mode',
-        message: 'Running in mock mode with sample game data'
-    });
+// Authentication middleware
+function requireAuth(req, res, next) {
+    if (req.session && req.session.userId) {
+        return next();
+    } else {
+        return res.redirect('/login');
+    }
+}
+
+// Login routes
+app.get('/login', function(req, res) {
+    res.render('login', { error: null });
 });
 
-app.get('/dashboard/:userId', async function(req,res) {
+app.post('/login', function(req, res) {
+    const { username, password } = req.body;
+    
+    const user = findUser(username, password);
+    if (user) {
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        res.redirect('/dashboard/1/games');
+    } else {
+        res.render('login', { error: 'Invalid username or password' });
+    }
+});
+
+// Sign-up routes
+app.get('/signup', function(req, res) {
+    res.render('signup', { error: null, success: null });
+});
+
+app.post('/signup', function(req, res) {
+    const { username, email, password, confirmPassword } = req.body;
+    
+    // Validation
+    if (!username || !email || !password || !confirmPassword) {
+        return res.render('signup', { error: 'All fields are required', success: null });
+    }
+    
+    if (username.length < 3) {
+        return res.render('signup', { error: 'Username must be at least 3 characters', success: null });
+    }
+    
+    if (password.length < 4) {
+        return res.render('signup', { error: 'Password must be at least 4 characters', success: null });
+    }
+    
+    if (password !== confirmPassword) {
+        return res.render('signup', { error: 'Passwords do not match', success: null });
+    }
+    
+    if (usernameExists(username)) {
+        return res.render('signup', { error: 'Username already exists', success: null });
+    }
+    
+    if (emailExists(email)) {
+        return res.render('signup', { error: 'Email already registered', success: null });
+    }
+    
+    // Create new user
+    const newUser = {
+        id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+        username: username,
+        email: email,
+        password: password // In production, this should be hashed!
+    };
+    
+    users.push(newUser);
+    
+    if (saveUsers()) {
+        // Auto-login after signup
+        req.session.userId = newUser.id;
+        req.session.username = newUser.username;
+        res.redirect('/dashboard/1/games');
+    } else {
+        res.render('signup', { error: 'Error creating account. Please try again.', success: null });
+    }
+});
+
+app.get('/logout', function(req, res) {
+    req.session.destroy();
+    res.redirect('/login');
+});
+
+app.get('/', async function(req, res) {
+    res.redirect('/login');
+});
+
+app.get('/dashboard/:userId', requireAuth, async function(req,res) {
   res.render('dashboard', { userId: req.params.userId });
 });
 
-app.get('/dashboard/:userId/user', async function(req, res) {
+app.get('/dashboard/:userId/user', requireAuth, async function(req, res) {
   res.render('user', { userId: req.params.userId });
 });
 
-app.get('/dashboard/:userId/games', async function(req, res) {
+app.get('/dashboard/:userId/games', requireAuth, async function(req, res) {
   res.render('games', { userId: req.params.userId });
 });
 
-app.get('/dashboard/:userId/ratings', async function(req, res) {
+app.get('/dashboard/:userId/ratings', requireAuth, async function(req, res) {
   res.render('ratings', { userId: req.params.userId });
 });
 

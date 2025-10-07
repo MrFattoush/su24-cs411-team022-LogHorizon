@@ -1,0 +1,96 @@
+html,
+body {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.form-signin {
+  max-width: 400px;
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.form-signin h1 {
+  color: #333;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+/* Login page - 2 fields */
+.form-signin input[type="text"]:first-of-type {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="email"]:first-of-type {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.form-signin input[type="password"]:last-of-type {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* Sign-up page - 4 fields */
+.form-signin form[action="/signup"] input[type="text"] {
+  border-radius: 4px 4px 0 0;
+  margin-bottom: -1px;
+}
+
+.form-signin form[action="/signup"] input[type="email"] {
+  border-radius: 0;
+  margin-bottom: -1px;
+}
+
+.form-signin form[action="/signup"] input[type="password"]:first-of-type {
+  border-radius: 0;
+  margin-bottom: -1px;
+}
+
+.form-signin form[action="/signup"] input[type="password"]:last-of-type {
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 0;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.form-floating > .form-control {
+  height: 3.5rem;
+  line-height: 1.25;
+}
+
+.alert {
+  border-radius: 10px;
+}
+
+a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
