@@ -60,18 +60,59 @@
 
         .game-item {
             border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-            .game-item h3 {
-                margin: 0;
-            }
+        .game-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
 
-            .game-item p {
-                margin: 5px 0;
-            }
+        .game-item h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .game-item p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .game-item button {
+            margin-top: 10px;
+            margin-right: 10px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .game-item button:first-of-type {
+            background: #667eea;
+            color: white;
+        }
+
+        .game-item button:first-of-type:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .game-item button:last-of-type {
+            background: #f44336;
+            color: white;
+        }
+
+        .game-item button:last-of-type:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
 
         .form-container {
             border: 1px solid #ccc;
@@ -117,6 +158,25 @@
                 <button type="submit">🔍 Get AI Recommendations</button>
             </form>
             <div id="recommendStatus" style="margin-top: 10px; font-size: 14px;"></div>
+        </div>
+
+        <!-- Edit Game Modal -->
+        <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                <h2>Edit Game</h2>
+                <form id="editGameForm">
+                    <input type="hidden" id="editGameId">
+                    <input type="text" id="editTitle" placeholder="Game Title" required style="width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="text" id="editDeveloper" placeholder="Developer Name" required style="width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="number" step="0.01" id="editPrice" placeholder="Price" required style="width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="text" id="editTags" placeholder="Tags (e.g., Action, RPG)" required style="width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="date" id="editReleaseDate" required style="width: 100%; margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" style="flex: 1; background: #667eea; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: 600;">💾 Save Changes</button>
+                        <button type="button" onclick="closeEditModal()" style="flex: 1; background: #ccc; color: #333; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: 600;">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="form-container">
@@ -252,11 +312,14 @@
                         gameItem.className = 'game-item';
                         gameItem.innerHTML = `
                             <h3>${game.Title}</h3>
-                            <p>Rating: ${game.AvgRating}</p>
-                            <p>Developer: ${game.Developer}</p>
-                            <p>Price: ${game.Price}</p>
-                            <button onclick="editGame(${game.GameID})">Edit</button>
-                            <button onclick="deleteGame(${game.GameID})">Delete</button>
+                            <p><strong>Developer:</strong> ${game.Developer}</p>
+                            <p><strong>Price:</strong> $${game.Price}</p>
+                            ${game.Tags ? `<p><strong>Tags:</strong> ${game.Tags}</p>` : ''}
+                            ${game.ReleaseDate ? `<p><strong>Released:</strong> ${game.ReleaseDate}</p>` : ''}
+                            <div style="margin-top: 15px;">
+                                <button onclick="editGame(${game.GameID})">Edit</button>
+                                <button onclick="deleteGame(${game.GameID})">Delete</button>
+                            </div>
                         `;
                         gameList.appendChild(gameItem);
                     });
@@ -308,20 +371,89 @@
         });
 
         function editGame(gameId) {
-            // Logic to handle game edit
-            alert('Edit functionality not implemented yet.');
+            // Fetch game details
+            fetch('/api/game')
+                .then(response => response.json())
+                .then(games => {
+                    const game = games.find(g => g.GameID === gameId);
+                    if (game) {
+                        // Populate edit form
+                        document.getElementById('editGameId').value = game.GameID;
+                        document.getElementById('editTitle').value = game.Title;
+                        document.getElementById('editDeveloper').value = game.Developer;
+                        document.getElementById('editPrice').value = game.Price;
+                        document.getElementById('editTags').value = game.Tags || '';
+                        document.getElementById('editReleaseDate').value = game.ReleaseDate || '';
+                        
+                        // Show modal
+                        document.getElementById('editModal').style.display = 'flex';
+                    }
+                })
+                .catch(error => console.error('Error fetching game details:', error));
         }
 
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Handle edit form submission
+        document.getElementById('editGameForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const gameId = document.getElementById('editGameId').value;
+            const data = {
+                title: document.getElementById('editTitle').value,
+                developer: document.getElementById('editDeveloper').value,
+                price: parseFloat(document.getElementById('editPrice').value),
+                tags: document.getElementById('editTags').value,
+                releaseDate: document.getElementById('editReleaseDate').value
+            };
+
+            try {
+                const response = await fetch(`/api/games/${gameId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('✅ ' + result.message);
+                    closeEditModal();
+                    fetchGames(); // Refresh game list
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error updating game:', error);
+                alert('❌ Error updating game. Please try again.');
+            }
+        });
+
         function deleteGame(gameId) {
+            if (!confirm('Are you sure you want to delete this game? This will also remove it from AI recommendations.')) {
+                return;
+            }
+            
             fetch(`/api/games/${gameId}`, {
                 method: 'DELETE'
             })
             .then(response => response.json())
             .then(data => {
-                alert(data.message);
-                fetchGames(); // Refresh game list after deletion
+                if (data.message) {
+                    alert('✅ ' + data.message);
+                    fetchGames(); // Refresh game list after deletion
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
             })
-            .catch(error => console.error('Error deleting game:', error));
+            .catch(error => {
+                console.error('Error deleting game:', error);
+                alert('❌ Error deleting game. Please try again.');
+            });
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

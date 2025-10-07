@@ -450,15 +450,6 @@ const mockGames = [
         "Description": "Phasmophobia by Kinetic Games. Tags: Horror, Co-op, Ghost Hunting, Multiplayer Released: 2020-09-18. Price: $13.99"
     },
     {
-        "GameID": 51,
-        "Title": "Star Wars Battlefront 2",
-        "Developer": "DICE",
-        "Price": 10.99,
-        "ReleaseDate": "2017-10-06",
-        "Tags": "First-person shooter, Third-person shooter, Fighting game, Adventure game, Adventure",
-        "Description": "Star Wars Battlefront 2 by DICE. Tags: First-person shooter, Third-person shooter, Fighting game, Adventure game, Adventure Released: 2017-10-06. Price: $10.99"
-    },
-    {
         "GameID": 52,
         "Title": "Five Nights at Freddy's",
         "Developer": "Scott Cawthon",

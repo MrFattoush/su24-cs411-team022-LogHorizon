@@ -23,7 +23,7 @@ console.log('4️⃣  Start the server:');
 console.log('   node server-mock.js\n');
 
 console.log('5️⃣  Test the AI recommendations:');
-console.log('   Visit: http://localhost:3000/dashboard/1/games\n');
+console.log('   Visit: http://localhost:3000/login\n');
 
 console.log('🧪 Test queries to try:');
 console.log('   • "I want a relaxing farming simulation game"');
@@ -55,4 +55,3 @@ if (process.env.COHERE_API_KEY && process.env.COHERE_API_KEY !== 'YOUR_COHERE_AP
 }
 
 console.log('\n' + '='.repeat(60));
-console.log('🎉 Ready to showcase your Cohere skills!');

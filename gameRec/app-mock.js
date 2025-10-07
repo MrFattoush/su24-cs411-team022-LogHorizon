@@ -300,6 +300,153 @@ app.get('/api/embeddings/status', (req, res) => {
   });
 });
 
+// Delete game
+app.delete('/api/games/:gameId', async (req, res) => {
+  try {
+    const gameId = parseInt(req.params.gameId);
+    
+    // Find game index
+    const gameIndex = mockGames.findIndex(g => g.GameID === gameId);
+    const embeddingIndex = gameEmbeddings.findIndex(e => e.gameId === gameId);
+    
+    if (gameIndex === -1) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+    
+    const deletedGame = mockGames[gameIndex];
+    
+    // Remove from arrays
+    mockGames.splice(gameIndex, 1);
+    if (embeddingIndex !== -1) {
+      gameEmbeddings.splice(embeddingIndex, 1);
+    }
+    
+    // Save to files
+    const mockDataPath = path.join(__dirname, 'mock-data.js');
+    const mockDataContent = `const mockGames = ${JSON.stringify(mockGames, null, 4)};\n\nmodule.exports = mockGames;\n`;
+    fs.writeFileSync(mockDataPath, mockDataContent);
+    
+    const embeddingsPath = path.join(__dirname, 'game-embeddings.json');
+    fs.writeFileSync(embeddingsPath, JSON.stringify(gameEmbeddings, null, 2));
+    
+    console.log(`✅ Game deleted: ${deletedGame.Title}`);
+    
+    res.json({
+      message: `Game "${deletedGame.Title}" deleted successfully!`,
+      totalGames: mockGames.length
+    });
+    
+  } catch (error) {
+    console.error('Error deleting game:', error);
+    res.status(500).json({ 
+      error: 'Error deleting game',
+      details: error.message 
+    });
+  }
+});
+
+// Update game with AI embeddings
+app.put('/api/games/:gameId', async (req, res) => {
+  try {
+    const gameId = parseInt(req.params.gameId);
+    const { title, developer, price, tags, releaseDate } = req.body;
+    
+    // Validate required fields
+    if (!title || !developer || price === undefined || !tags || !releaseDate) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+    
+    // Find game index
+    const gameIndex = mockGames.findIndex(g => g.GameID === gameId);
+    const embeddingIndex = gameEmbeddings.findIndex(e => e.gameId === gameId);
+    
+    if (gameIndex === -1) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+    
+    // Create updated description for AI embeddings
+    const description = `${title} by ${developer}. Tags: ${tags} Released: ${releaseDate}. Price: $${price}`;
+    
+    // Update game object
+    mockGames[gameIndex] = {
+      GameID: gameId,
+      Title: title,
+      Developer: developer,
+      Price: parseFloat(price),
+      ReleaseDate: releaseDate,
+      Tags: tags,
+      Description: description
+    };
+    
+    console.log(`Updating game: ${title}`);
+    
+    // Generate new embeddings using Cohere
+    try {
+      const response = await cohere.embed({
+        texts: [description],
+        model: 'embed-english-v3.0',
+        inputType: 'search_document'
+      });
+      
+      // Update embedding object
+      const updatedEmbedding = {
+        gameId: gameId,
+        title: title,
+        developer: developer,
+        price: parseFloat(price),
+        releaseDate: releaseDate,
+        tags: tags,
+        description: description,
+        embedding: response.embeddings[0]
+      };
+      
+      if (embeddingIndex !== -1) {
+        gameEmbeddings[embeddingIndex] = updatedEmbedding;
+      } else {
+        gameEmbeddings.push(updatedEmbedding);
+      }
+      
+      // Save to files
+      const mockDataPath = path.join(__dirname, 'mock-data.js');
+      const mockDataContent = `const mockGames = ${JSON.stringify(mockGames, null, 4)};\n\nmodule.exports = mockGames;\n`;
+      fs.writeFileSync(mockDataPath, mockDataContent);
+      
+      const embeddingsPath = path.join(__dirname, 'game-embeddings.json');
+      fs.writeFileSync(embeddingsPath, JSON.stringify(gameEmbeddings, null, 2));
+      
+      console.log(`✅ Game updated successfully with AI embeddings: ${title}`);
+      
+      res.json({
+        message: `Game "${title}" updated successfully with new AI embeddings!`,
+        game: mockGames[gameIndex],
+        totalGames: mockGames.length
+      });
+      
+    } catch (embeddingError) {
+      console.error('Error generating embeddings:', embeddingError);
+      
+      // Save game data even if embeddings fail
+      const mockDataPath = path.join(__dirname, 'mock-data.js');
+      const mockDataContent = `const mockGames = ${JSON.stringify(mockGames, null, 4)};\n\nmodule.exports = mockGames;\n`;
+      fs.writeFileSync(mockDataPath, mockDataContent);
+      
+      res.json({
+        message: `Game "${title}" updated, but AI embeddings failed. You may need to regenerate embeddings.`,
+        game: mockGames[gameIndex],
+        warning: 'Embeddings generation failed',
+        totalGames: mockGames.length
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error updating game:', error);
+    res.status(500).json({ 
+      error: 'Error updating game',
+      details: error.message 
+    });
+  }
+});
+
 // Add new game with AI embeddings
 app.post('/api/game', async (req, res) => {
   try {
