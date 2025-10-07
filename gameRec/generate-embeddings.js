@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mysql = require('mysql2');
 const { CohereClient } = require('cohere-ai');
 const fs = require('fs');

@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
@@ -168,6 +169,101 @@ app.get('/api/embeddings/status', (req, res) => {
     hasEmbeddings: gameEmbeddings.length > 0,
     lastUpdated: gameEmbeddings.length > 0 ? 'Available' : 'Not generated'
   });
+});
+
+// Add new game with AI embeddings
+app.post('/api/game', async (req, res) => {
+  try {
+    const { title, developer, price, tags, releaseDate } = req.body;
+    
+    // Validate required fields
+    if (!title || !developer || price === undefined || !tags || !releaseDate) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+    
+    // Generate unique GameID
+    const newGameId = mockGames.length > 0 ? Math.max(...mockGames.map(g => g.GameID)) + 1 : 1;
+    
+    // Create description for AI embeddings
+    const description = `${title} by ${developer}. Tags: ${tags} Released: ${releaseDate}. Price: $${price}`;
+    
+    // Create new game object
+    const newGame = {
+      GameID: newGameId,
+      Title: title,
+      Developer: developer,
+      Price: parseFloat(price),
+      ReleaseDate: releaseDate,
+      Tags: tags,
+      Description: description
+    };
+    
+    console.log(`Adding new game: ${title}`);
+    
+    // Generate embeddings using Cohere
+    try {
+      const response = await cohere.embed({
+        texts: [description],
+        model: 'embed-english-v3.0',
+        inputType: 'search_document'
+      });
+      
+      // Create embedding object
+      const newEmbedding = {
+        gameId: newGameId,
+        title: title,
+        developer: developer,
+        price: parseFloat(price),
+        releaseDate: releaseDate,
+        tags: tags,
+        description: description,
+        embedding: response.embeddings[0]
+      };
+      
+      // Add to arrays
+      mockGames.push(newGame);
+      gameEmbeddings.push(newEmbedding);
+      
+      // Save to files
+      const mockDataPath = path.join(__dirname, 'mock-data.js');
+      const mockDataContent = `const mockGames = ${JSON.stringify(mockGames, null, 4)};\n\nmodule.exports = mockGames;\n`;
+      fs.writeFileSync(mockDataPath, mockDataContent);
+      
+      const embeddingsPath = path.join(__dirname, 'game-embeddings.json');
+      fs.writeFileSync(embeddingsPath, JSON.stringify(gameEmbeddings, null, 2));
+      
+      console.log(`✅ Game added successfully with AI embeddings: ${title}`);
+      
+      res.json({
+        message: `Game "${title}" added successfully with AI embeddings! Now available for recommendations.`,
+        game: newGame,
+        totalGames: mockGames.length
+      });
+      
+    } catch (embeddingError) {
+      console.error('Error generating embeddings:', embeddingError);
+      // Still add the game even if embeddings fail
+      mockGames.push(newGame);
+      
+      const mockDataPath = path.join(__dirname, 'mock-data.js');
+      const mockDataContent = `const mockGames = ${JSON.stringify(mockGames, null, 4)};\n\nmodule.exports = mockGames;\n`;
+      fs.writeFileSync(mockDataPath, mockDataContent);
+      
+      res.json({
+        message: `Game "${title}" added, but AI embeddings failed. You may need to regenerate embeddings.`,
+        game: newGame,
+        warning: 'Embeddings generation failed',
+        totalGames: mockGames.length
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error adding game:', error);
+    res.status(500).json({ 
+      error: 'Error adding game',
+      details: error.message 
+    });
+  }
 });
 
 module.exports = app;

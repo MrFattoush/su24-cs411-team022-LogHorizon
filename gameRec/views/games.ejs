@@ -73,9 +73,11 @@
             <h2>Add New Game</h2>
             <form id="addGameForm">
                 <input type="text" name="title" placeholder="Game Title" required>
-                <input type="text" name="price" placeholder="Price" required>
-                <input type="text" name="developer" placeholder="DeveloperId" required>
-                <button type="submit">Add Game</button>
+                <input type="text" name="developer" placeholder="Developer Name" required>
+                <input type="number" step="0.01" name="price" placeholder="Price (e.g., 29.99)" required>
+                <input type="text" name="tags" placeholder="Tags (e.g., Action, RPG, Multiplayer)" required>
+                <input type="date" name="releaseDate" required>
+                <button type="submit">🎮 Add Game + Generate AI Embeddings</button>
             </form>
         </div>
 
@@ -211,29 +213,48 @@
                 })
                 .catch(error => console.error('Error fetching games:', error));
         }
-        document.getElementById('addGameForm').addEventListener('submit', function(event) {
+        document.getElementById('addGameForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+            
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = '🔄 Adding game and generating AI embeddings...';
+            
             const data = {
                 title: formData.get('title'),
-                releaseDate: "2024-01-01",
-                price: formData.get('price'),
-                developerId: formData.get('developer')
+                developer: formData.get('developer'),
+                releaseDate: formData.get('releaseDate'),
+                price: parseFloat(formData.get('price')),
+                tags: formData.get('tags')
             };
 
-            fetch('/api/game', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                fetchGames(); // Refresh game list after adding
-            })
-            .catch(error => console.error('Error adding game:', error));
+            try {
+                const response = await fetch('/api/game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('✅ ' + result.message);
+                    this.reset(); // Clear the form
+                    fetchGames(); // Refresh game list
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error adding game:', error);
+                alert('❌ Error adding game. Please try again.');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '🎮 Add Game + Generate AI Embeddings';
+            }
         });
 
         function editGame(gameId) {

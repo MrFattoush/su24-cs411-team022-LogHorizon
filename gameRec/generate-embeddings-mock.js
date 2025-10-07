@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { CohereClient } = require('cohere-ai');
 const fs = require('fs');
 const path = require('path');
