@@ -1,0 +1,9 @@
+# Cohere API Configuration
+# Get your free API key at: https://cohere.ai/
+COHERE_API_KEY=your_cohere_api_key_here
+
+# Database Configuration (already configured in your app)
+# DB_HOST=34.27.8.241
+# DB_USER=root
+# DB_PASSWORD=abc123
+# DB_NAME=GameRecommender

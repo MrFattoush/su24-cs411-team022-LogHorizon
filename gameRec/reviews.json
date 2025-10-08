@@ -25,5 +25,23 @@
     "rating": 5,
     "comment": "I love this game",
     "createdAt": "2025-10-08T00:48:13.824Z"
+  },
+  {
+    "reviewId": 4,
+    "userId": 6,
+    "gameId": 5,
+    "gameTitle": "Among Us",
+    "rating": 5,
+    "comment": "i love the game because im a good imposter",
+    "createdAt": "2025-10-08T00:55:46.183Z"
+  },
+  {
+    "reviewId": 5,
+    "userId": 2,
+    "gameId": 54,
+    "gameTitle": "Pokemon Fire Red",
+    "rating": 5,
+    "comment": "goated game",
+    "createdAt": "2025-10-08T00:57:43.975Z"
   }
 ]

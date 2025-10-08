@@ -466,6 +466,15 @@ const mockGames = [
         "ReleaseDate": "2017-10-06",
         "Tags": "First-person shooter, Third-person shooter, Fighting game, Adventure game, Adventure",
         "Description": "Star Wars Battlefront 2 by DICE. Tags: First-person shooter, Third-person shooter, Fighting game, Adventure game, Adventure Released: 2017-10-06. Price: $10.99"
+    },
+    {
+        "GameID": 54,
+        "Title": "Pokemon Fire Red",
+        "Developer": "Game Freak",
+        "Price": 20,
+        "ReleaseDate": "2004-01-29",
+        "Tags": "Adventure game, Japanese role-playing game, Strategy video game",
+        "Description": "Pokemon Fire Red by Game Freak. Tags: Adventure game, Japanese role-playing game, Strategy video game Released: 2004-01-29. Price: $20"
     }
 ];
 
