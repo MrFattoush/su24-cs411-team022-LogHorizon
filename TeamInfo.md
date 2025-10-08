@@ -6,10 +6,10 @@
 | ----------- | ---------------------- |
 | TeamID      |        Team-022        |
 | TeamName    |        LogHorizon         |
-| Captain     |      Uriel Arellano     |
-| Captain     |   uriela2@illinois.edu  |
-| Member1     |      Mohammad Fattash       |
-| Member1     |   fattash2@illinois.edu  |
+| Captain     |      Mohammad Fattash     |
+| Captain     |   fattash2@illinois.edu  |
+| Member1     |      Uriel Arellano       |
+| Member1     |   uriela2@illinois.edu  |
 | Member2     |      Jonathan Stanley       |
 | Member2     |   jbiel2@illinois.edu       |
 | Member3     |       Mike Lee               |
