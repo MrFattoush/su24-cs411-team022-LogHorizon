@@ -457,6 +457,15 @@ const mockGames = [
         "ReleaseDate": "2014-08-08",
         "Tags": "Indie game, Survival horror, Simulation video game, Action-adventure game, Graphic adventure game",
         "Description": "Five Nights at Freddy's by Scott Cawthon. Tags: Indie game, Survival horror, Simulation video game, Action-adventure game, Graphic adventure game Released: 2014-08-08. Price: $5"
+    },
+    {
+        "GameID": 53,
+        "Title": "Star Wars Battlefront 2",
+        "Developer": "DICE",
+        "Price": 10.99,
+        "ReleaseDate": "2017-10-06",
+        "Tags": "First-person shooter, Third-person shooter, Fighting game, Adventure game, Adventure",
+        "Description": "Star Wars Battlefront 2 by DICE. Tags: First-person shooter, Third-person shooter, Fighting game, Adventure game, Adventure Released: 2017-10-06. Price: $10.99"
     }
 ];
 

@@ -1,0 +1,29 @@
+[
+  {
+    "reviewId": 1,
+    "userId": 2,
+    "gameId": 1,
+    "gameTitle": "Stardew Valley",
+    "rating": 5,
+    "comment": "fun game",
+    "createdAt": "2025-10-08T00:40:19.010Z"
+  },
+  {
+    "reviewId": 2,
+    "userId": 1,
+    "gameId": 5,
+    "gameTitle": "Among Us",
+    "rating": 1,
+    "comment": "I suck at the game",
+    "createdAt": "2025-10-08T00:40:58.765Z"
+  },
+  {
+    "reviewId": 3,
+    "userId": 2,
+    "gameId": 53,
+    "gameTitle": "Star Wars Battlefront 2",
+    "rating": 5,
+    "comment": "I love this game",
+    "createdAt": "2025-10-08T00:48:13.824Z"
+  }
+]

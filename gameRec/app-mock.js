@@ -36,6 +36,18 @@ try {
     console.error('Error loading users:', error);
 }
 
+// Load reviews from JSON file
+let reviews = [];
+const reviewsPath = path.join(__dirname, 'reviews.json');
+try {
+    if (fs.existsSync(reviewsPath)) {
+        reviews = JSON.parse(fs.readFileSync(reviewsPath, 'utf8'));
+        console.log(`Loaded ${reviews.length} reviews`);
+    }
+} catch (error) {
+    console.error('Error loading reviews:', error);
+}
+
 // Helper function to save users
 function saveUsers() {
     try {
@@ -60,6 +72,17 @@ function usernameExists(username) {
 // Helper function to check if email exists
 function emailExists(email) {
     return users.find(u => u.email === email);
+}
+
+// Helper function to save reviews
+function saveReviews() {
+    try {
+        fs.writeFileSync(reviewsPath, JSON.stringify(reviews, null, 2));
+        return true;
+    } catch (error) {
+        console.error('Error saving reviews:', error);
+        return false;
+    }
 }
 
 function cosineSimilarity(vecA, vecB) {
@@ -119,7 +142,7 @@ app.post('/login', function(req, res) {
     if (user) {
         req.session.userId = user.id;
         req.session.username = user.username;
-        res.redirect('/dashboard/1/games');
+        res.redirect(`/dashboard/${user.id}/games`);
     } else {
         res.render('login', { error: 'Invalid username or password' });
     }
@@ -172,7 +195,7 @@ app.post('/signup', function(req, res) {
         // Auto-login after signup
         req.session.userId = newUser.id;
         req.session.username = newUser.username;
-        res.redirect('/dashboard/1/games');
+        res.redirect(`/dashboard/${newUser.id}/games`);
     } else {
         res.render('signup', { error: 'Error creating account. Please try again.', success: null });
     }
@@ -188,19 +211,23 @@ app.get('/', async function(req, res) {
 });
 
 app.get('/dashboard/:userId', requireAuth, async function(req,res) {
-  res.render('dashboard', { userId: req.params.userId });
+  // Use session userId, not URL parameter for security
+  res.render('dashboard', { userId: req.session.userId });
 });
 
 app.get('/dashboard/:userId/user', requireAuth, async function(req, res) {
-  res.render('user', { userId: req.params.userId });
+  // Use session userId, not URL parameter for security
+  res.render('user', { userId: req.session.userId });
 });
 
 app.get('/dashboard/:userId/games', requireAuth, async function(req, res) {
-  res.render('games', { userId: req.params.userId });
+  // Use session userId, not URL parameter for security
+  res.render('games', { userId: req.session.userId });
 });
 
 app.get('/dashboard/:userId/ratings', requireAuth, async function(req, res) {
-  res.render('ratings', { userId: req.params.userId });
+  // Use session userId, not URL parameter for security
+  res.render('ratings', { userId: req.session.userId });
 });
 
 app.get('/api/games/:userId', async function(req, res) {
@@ -539,6 +566,107 @@ app.post('/api/game', async (req, res) => {
       error: 'Error adding game',
       details: error.message 
     });
+  }
+});
+
+// Review endpoints
+// Get all reviews for a user
+app.get('/api/reviews/user/:userId', requireAuth, (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const userReviews = reviews.filter(r => r.userId === userId);
+    res.json(userReviews);
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ error: 'Error fetching reviews' });
+  }
+});
+
+// Get all reviews
+app.get('/api/reviews', requireAuth, (req, res) => {
+  res.json(reviews);
+});
+
+// Add a review
+app.post('/api/reviews', requireAuth, (req, res) => {
+  try {
+    // Use session userId instead of client-provided userId for security
+    const userId = req.session.userId;
+    const { gameId, rating, comment } = req.body;
+    
+    if (!gameId || !rating) {
+      return res.status(400).json({ error: 'gameId and rating are required' });
+    }
+    
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Rating must be between 1 and 5' });
+    }
+    
+    // Check if user already reviewed this game
+    const existingReview = reviews.find(r => r.userId === userId && r.gameId === parseInt(gameId));
+    if (existingReview) {
+      return res.status(400).json({ error: 'You have already reviewed this game' });
+    }
+    
+    // Get game info
+    const game = mockGames.find(g => g.GameID === parseInt(gameId));
+    if (!game) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+    
+    const newReview = {
+      reviewId: reviews.length > 0 ? Math.max(...reviews.map(r => r.reviewId)) + 1 : 1,
+      userId: userId,
+      gameId: parseInt(gameId),
+      gameTitle: game.Title,
+      rating: parseInt(rating),
+      comment: comment || '',
+      createdAt: new Date().toISOString()
+    };
+    
+    reviews.push(newReview);
+    
+    if (saveReviews()) {
+      res.json({
+        message: 'Review added successfully!',
+        review: newReview
+      });
+    } else {
+      res.status(500).json({ error: 'Error saving review' });
+    }
+  } catch (error) {
+    console.error('Error adding review:', error);
+    res.status(500).json({ error: 'Error adding review', details: error.message });
+  }
+});
+
+// Delete a review
+app.delete('/api/reviews/:reviewId', requireAuth, (req, res) => {
+  try {
+    const reviewId = parseInt(req.params.reviewId);
+    const reviewIndex = reviews.findIndex(r => r.reviewId === reviewId);
+    
+    if (reviewIndex === -1) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+    
+    const deletedReview = reviews[reviewIndex];
+    
+    // Security: Only allow users to delete their own reviews
+    if (deletedReview.userId !== req.session.userId) {
+      return res.status(403).json({ error: 'You can only delete your own reviews' });
+    }
+    
+    reviews.splice(reviewIndex, 1);
+    
+    if (saveReviews()) {
+      res.json({ message: 'Review deleted successfully!' });
+    } else {
+      res.status(500).json({ error: 'Error deleting review' });
+    }
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    res.status(500).json({ error: 'Error deleting review' });
   }
 });
 

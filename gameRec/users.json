@@ -16,5 +16,17 @@
     "username": "jeff",
     "email": "demo@gmail.com",
     "password": "demo"
+  },
+  {
+    "id": 4,
+    "username": "jammy",
+    "email": "jjj@gmail.com",
+    "password": "demo"
+  },
+  {
+    "id": 5,
+    "username": "demo1",
+    "email": "fattash22@gmail.com",
+    "password": "demo"
   }
 ]

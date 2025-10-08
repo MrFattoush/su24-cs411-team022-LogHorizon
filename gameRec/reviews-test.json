@@ -1,0 +1,10 @@
+[
+  {
+    "reviewId": 1,
+    "userId": 1,
+    "gameId": 1,
+    "gameTitle": "Test",
+    "rating": 5,
+    "comment": "Test"
+  }
+]
