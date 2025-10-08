@@ -8,6 +8,7 @@ var { CohereClient } = require('cohere-ai');
 const cohere = new CohereClient({
     token: process.env.COHERE_API_KEY || 'YOUR_COHERE_API_KEY_HERE'
 });
+
 let gameEmbeddings = [];
 try {
     const embeddingsPath = path.join(__dirname, 'game-embeddings.json');
