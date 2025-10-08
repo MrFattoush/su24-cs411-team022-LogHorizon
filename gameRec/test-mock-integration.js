@@ -4,7 +4,7 @@ const path = require('path');
 const mockGames = require('./mock-data');
 
 async function testMockCohereIntegration() {
-    console.log('🧪 Testing Cohere Integration with Mock Data...\n');
+    console.log('Testing Cohere Integration with Mock Data...\n');
     
     const apiKey = process.env.COHERE_API_KEY;
     if (!apiKey || apiKey === 'YOUR_COHERE_API_KEY_HERE') {
@@ -18,7 +18,7 @@ async function testMockCohereIntegration() {
         const cohere = new CohereClient({ token: apiKey });
         console.log('✅ Cohere client initialized');
         
-        console.log('🔍 Testing embedding generation with mock games...');
+        console.log('Testing embedding generation with mock games...');
         const response = await cohere.embed({
             texts: ['I want a relaxing farming simulation game'],
             model: 'embed-english-v3.0',
@@ -35,8 +35,8 @@ async function testMockCohereIntegration() {
             console.log('⚠️  No embeddings file found. Run generate-embeddings-mock.js first.');
         }
         
-        console.log('\n🎉 Mock Cohere integration test passed!');
-        console.log('\n📋 Next steps:');
+        console.log('\nMock Cohere integration test passed!');
+        console.log('\nNext steps:');
         console.log('1. Run: node generate-embeddings-mock.js');
         console.log('2. Start mock server: node server-mock.js');
         console.log('3. Visit: http://localhost:3000/dashboard/1/games');
@@ -51,7 +51,7 @@ async function testMockCohereIntegration() {
 }
 
 async function testMockAPIEndpoints() {
-    console.log('\n🌐 Testing mock API endpoints...');
+    console.log('\n Testing mock API endpoints...');
     
     try {
         // Test embeddings status endpoint
@@ -85,7 +85,7 @@ async function testMockAPIEndpoints() {
 
 // Main test function
 async function main() {
-    console.log('🚀 Mock Cohere Integration Test Suite\n');
+    console.log(' Mock Cohere Integration Test Suite\n');
     console.log('=' .repeat(50));
     
     const cohereTest = await testMockCohereIntegration();
@@ -95,7 +95,7 @@ async function main() {
     }
     
     console.log('\n' + '=' .repeat(50));
-    console.log('🏁 Mock test complete!');
+    console.log(' Mock test complete!');
 }
 
 // Run tests
