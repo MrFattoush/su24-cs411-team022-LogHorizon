@@ -475,6 +475,15 @@ const mockGames = [
         "ReleaseDate": "2004-01-29",
         "Tags": "Adventure game, Japanese role-playing game, Strategy video game",
         "Description": "Pokemon Fire Red by Game Freak. Tags: Adventure game, Japanese role-playing game, Strategy video game Released: 2004-01-29. Price: $20"
+    },
+    {
+        "GameID": 55,
+        "Title": "Pokemon Platnium",
+        "Developer": "Game Freak",
+        "Price": 20,
+        "ReleaseDate": "2008-09-13",
+        "Tags": "Adventure game, Japanese role-playing game, Strategy video game",
+        "Description": "Pokemon Platnium by Game Freak. Tags: Adventure game, Japanese role-playing game, Strategy video game Released: 2008-09-13. Price: $20"
     }
 ];
 

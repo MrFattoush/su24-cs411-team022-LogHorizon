@@ -43,5 +43,14 @@
     "rating": 5,
     "comment": "goated game",
     "createdAt": "2025-10-08T00:57:43.975Z"
+  },
+  {
+    "reviewId": 6,
+    "userId": 2,
+    "gameId": 4,
+    "gameTitle": "Portal 2",
+    "rating": 4,
+    "comment": "i love this game",
+    "createdAt": "2025-10-08T01:41:38.620Z"
   }
 ]
