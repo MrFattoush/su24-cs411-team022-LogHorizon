@@ -1,5 +1,44 @@
+# Dependencies
 node_modules/
+gameRec/node_modules/
+
+# Environment variables
 .env
-gameRec/game-embeddings.json
 gameRec/.env
-gameRec/env-example.txt
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist/
+build/
+
+# Generated files
+gameRec/game-embeddings.json
+
+# User data (optional - uncomment if you don't want to track)
+# gameRec/users.json
+# gameRec/reviews.json
+
+# Test files
+*.test.js
+coverage/
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
