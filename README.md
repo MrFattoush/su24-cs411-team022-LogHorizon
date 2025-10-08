@@ -131,18 +131,10 @@ su24-cs411-team022-LogHorizon/
    http://localhost:3000/login
    ```
 
-### Default Test Accounts
-
-| Username | Password | User ID |
-|----------|----------|---------|
-| demo     | demo     | 1       |
-| fattoush | Demo123  | 2       |
-| jeff     | demo     | 3       |
-| jammy    | demo     | 4       |
 
 ---
 
-## 🎯 Usage
+## Usage
 
 ### 1. **Login/Signup**
 - Navigate to `http://localhost:3000/login`
